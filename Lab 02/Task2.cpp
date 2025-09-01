@@ -1,9 +1,6 @@
 #include<iostream>
 using namespace std;
 
-// int** arr = new int*[rows];
-// for(i:rows) arr[i] = new int[cols]
-
 int main(){
     int row,col;
     cout<<"Enter the number of rows: ";
