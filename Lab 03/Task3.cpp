@@ -30,48 +30,53 @@ class List{
             tail = newNode;
         }
     }
-
-    Node* ifCycle(){
-        Node* fast = head;
-        Node* slow = head;
-        while(fast!=NULL && fast->next!=NULL){
-            slow = slow->next;
-            fast = fast->next->next;
-            if(fast == slow){
-                slow = head;
-                while(slow != fast){
-                    slow = slow->next;
-                    fast = fast->next;
-                }
-                return slow;
+    Node* reverse_k_group(Node* head, int k){
+        Node* temp = head;
+        int count = 0;
+        // checking if k nodes exist
+        while(count < k){
+            if(temp == NULL){
+                return head;
             }
+            temp = temp->next;
+            count++;
+
         }
-        return nullptr;
+        // recursively call for the rest of the ll
+        Node* prevNode = reverse_k_group(temp, k);
+        // reverse current k group
+        temp =head;
+        count = 0;
+        while(count < k){
+            Node* next = temp->next;
+            temp->next = prevNode;
+            prevNode = temp;
+            temp = next;
+            count++;
+        }
+        return prevNode;
     }
 
-    void print(){
-        Node* temp = head;
-        while(temp != NULL){
-            cout<<temp->data<<" -> ";
-            temp = temp->next;
+    void print(Node* node) {
+        while (node) {
+            cout << node->data << " -> ";
+            node = node->next;
         }
-        cout<<"NULL\n";
+        cout << "NULL\n";
     }
 };
 
 int main(){
-    List l1;
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-    l1.push_back(4);
-    l1.tail->next = l1.head->next;
-    Node* startCycle = l1.ifCycle();
-    if(startCycle){
-        cout<<"Cycle present at node "<<startCycle->data<<endl;
-    }else{
-        cout<<"Cycle not present\n";
+    List l;
+    for (int i = 1; i <= 8; i++){
+        l.push_back(i);
     }
+    int k;
+    cout<<"Enter k: ";
+    cin>>k;
+    l.head = l.reverse_k_group(l.head, k);
+    cout << "Reversed in groups of " << k << ": ";
+    l.print(l.head);
 
     return 0;
 }
