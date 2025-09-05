@@ -12,15 +12,15 @@ class Node{
     }
 };
 
-class List{
-    public:  
+class List{  //push_front, push_back, pop_front, pop_back
     Node* head;
     Node* tail;
 
+    public:
     List(){
         head = tail = nullptr;
     }
-
+    
     void push_back(int val){
         Node* newNode = new Node(val);
         if(head == NULL){
@@ -30,39 +30,44 @@ class List{
             tail = newNode;
         }
     }
-    Node* reverse_k_group(Node* head, int k){
+
+    Node* k_reverse(Node* head, int k){
+        Node* curr = head;
+        Node* prev = nullptr;
+        Node* next = nullptr;
+        int cnt = 0;
         Node* temp = head;
-        int count = 0;
-        // checking if k nodes exist
-        while(count < k){
+        for(int i=0;i<k;i++){
             if(temp == NULL){
                 return head;
             }
             temp = temp->next;
-            count++;
+        }
+        while(curr!=nullptr && cnt < k){
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+            cnt++;
+        }
+        if (next){
+        head->next = k_reverse(next, k);
+        }
+        return prev;
 
-        }
-        // recursively call for the rest of the ll
-        Node* prevNode = reverse_k_group(temp, k);
-        // reverse current k group
-        temp =head;
-        count = 0;
-        while(count < k){
-            Node* next = temp->next;
-            temp->next = prevNode;
-            prevNode = temp;
-            temp = next;
-            count++;
-        }
-        return prevNode;
+    }
+    
+    void reverseInGroups(int k) {
+        head = k_reverse(head, k);
     }
 
-    void print(Node* node) {
-        while (node) {
-            cout << node->data << " -> ";
-            node = node->next;
+    void print(){
+        Node* temp = head;
+        while(temp != NULL){
+            cout<<temp->data<<" -> ";
+            temp = temp->next;
         }
-        cout << "NULL\n";
+        cout<<"NULL\n";
     }
 };
 
@@ -71,12 +76,10 @@ int main(){
     for (int i = 1; i <= 8; i++){
         l.push_back(i);
     }
-    int k;
-    cout<<"Enter k: ";
-    cin>>k;
-    l.head = l.reverse_k_group(l.head, k);
+    int k = 3;
+    l.reverseInGroups(k);
     cout << "Reversed in groups of " << k << ": ";
-    l.print(l.head);
+    l.print();
 
     return 0;
 }
