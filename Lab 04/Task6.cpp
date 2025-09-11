@@ -14,7 +14,7 @@ void comb_sort(int arr[], int n){
             gap = 1;
         }
         swapped = false;
-        for(int i=0;i+gap < n;i++){
+        for(int i=0;i< n-gap ;i++){
             comparisons++;
             if(arr[i] > arr[i+gap]){
                 int temp = arr[i];
