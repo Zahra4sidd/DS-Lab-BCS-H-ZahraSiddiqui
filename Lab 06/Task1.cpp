@@ -19,18 +19,20 @@ class Stack{
 
     bool push(int x){
         if(top > MAX){
+            cout<<"Stack overflow\n";
             return false;
         }
         arr[++top] = x;
         return true;
     }
 
-    int pop(){
+    void pop(){
         if(!isEmpty()){
-            int x = arr[top--];
-            return x;
+            arr[top--];
         }
-        return 0;
+        else{
+            cout<<"Stack underflow\n";
+        }
     }
 
     int peek(){
@@ -38,12 +40,14 @@ class Stack{
             int x = arr[top];
             return x;
         }
+        cout<<"Stack is empty\n";
         return 0;
     }
 
     void printArr(){
-        while(top != -1){
-            cout<<pop()<<endl;
+        while(!isEmpty()){
+            cout<<peek()<<endl;
+            pop();
         }
     }
 };
