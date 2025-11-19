@@ -1,0 +1,168 @@
+#include<iostream>
+using namespace std;
+
+class Node{
+    public:
+    int data;
+    Node* right;
+    Node* left;
+    int height;
+    Node(int val):data(val),left(nullptr),right(nullptr),height(1){}
+};
+int getHeight(Node* n){
+    if(n==nullptr) return 0;
+    return n->height;
+}
+int getBalance(Node* n){
+    if(n==nullptr) return 0;
+    return getHeight(n->left) - getHeight(n->right);
+}
+int max(int a, int b){
+    if(a > b) return a;
+    else return b;
+}
+Node* rightRotate(Node* n){
+    cout<<"Right rotation performed!\n";
+    Node* y = n->left;
+    Node* T3 = y->right;
+    y->right =n;
+    n->left = T3;
+    n->height = max(getHeight(n->left),getHeight(n->right)) + 1;
+    y->height = max(getHeight(y->left),getHeight(y->right)) + 1;
+    return y;
+}
+Node* leftRotate(Node* n){
+    cout<<"Left rotation performed!\n";
+    Node* y = n->right;
+    Node* T2 = y->left;
+    y->left = n;
+    n->right =T2;
+    n->height = max(getHeight(n->left),getHeight(n->right)) + 1;
+    y->height = max(getHeight(y->left),getHeight(y->right)) + 1;
+    return y;
+}
+Node* insert(Node* n, int val){
+    if(n ==NULL){
+        cout<<"Inserted patient with severity: "<<val<<endl;
+        return new Node(val);
+    }
+    if(val < n->data){
+        n->left = insert(n->left, val);
+    }
+    else if(val>n->data){
+        n->right = insert(n->right,val);
+    }
+    else return n;
+
+    n->height = max(getHeight(n->left),getHeight(n->right))+1;
+    int balance = getBalance(n);
+    if(balance>1){
+        if(val < n->left->data){
+            return rightRotate(n);
+        }
+        else{
+            n->left = leftRotate(n->left);
+            return rightRotate(n);
+        }
+    }
+    if(balance < -1){
+        if(val>n->right->data){
+            return leftRotate(n);
+        }
+        else{
+            n->right = rightRotate(n->right);
+            return leftRotate(n);
+        }
+    }
+    return n;
+}
+Node* getMin(Node* n){
+    while(n->left!=nullptr){
+        n = n->left;
+    }
+    return n;
+}
+Node* deleteNode(Node* root, int key){
+        if(root==nullptr) return nullptr;
+        if(key<root->data){
+            root->left = deleteNode(root->left,key);
+        }
+        else if(key>root->data){
+            root->right = deleteNode(root->right,key);
+        }
+        else{
+            // Case1: leaf node
+            if(root->left==nullptr && root->right==nullptr){
+                
+                delete root;
+                return nullptr;
+            }
+            //Case2: 1 child
+            else if(root->left==nullptr){
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            }
+            else if(root->right==nullptr){
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+            else{
+                //Case3:2 children
+            Node* succ = getMin(root->right);
+            root->data = succ->data;
+            root->right = deleteNode(root->right,succ->data);
+            }
+        }
+
+    root->height = max(getHeight(root->left),getHeight(root->right))+1;
+    int balance = getBalance(root);
+    if(balance>1){
+        if(getBalance(root->left)>=0){
+            return rightRotate(root);
+        }
+        else{
+            root->left = leftRotate(root->left);
+            return rightRotate(root);
+        }
+    }
+    if(balance < -1){
+        if(getBalance(root->right)<=0){
+            return leftRotate(root);
+        }
+        else{
+            root->right = rightRotate(root->right);
+            return leftRotate(root);
+        }
+    }
+    return root;
+}
+
+int highestSeverity(Node* root){
+    if(!root) return -1;
+    while(root->right){
+        root = root->right;
+    }
+    return root->data;
+}
+int main(){
+    Node* root = nullptr;
+    cout << "PATIENT SEVERITY SYSTEM\n";
+    int arrivals[] = {40, 20, 60, 10, 30, 50, 70};
+    int discharges[] = {10, 60};
+    cout << "\nPATIENT ARRIVALS (Insertions)\n";
+    for(int val : arrivals){
+        root = insert(root, val);
+        cout << "Tree height: " << getHeight(root) << endl;
+    }
+    cout << "Most critical patient severity: " << highestSeverity(root) << "\n";
+    cout << "\nPATIENT DISCHARGES (Deletions)\n";
+    for(int val : discharges){
+        cout << "Discharged patient with severity: " <<val << endl;
+        root = deleteNode(root, val);
+        cout << "Tree height: " << getHeight(root) << endl;
+    }
+ 
+    return 0;
+}
